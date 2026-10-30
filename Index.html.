@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Какое ты животное? — Testoria</title>
+<meta name="description" content="Пройди интересный тест и узнай, какое ты животное!">
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#10111b;
+ color:white;
+ min-height:100vh;
+}
+header{
+ padding:24px 7%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+.logo{font-size:27px;font-weight:900;color:#a78bfa}
+header span{color:#aaa;font-size:14px}
+main{
+ max-width:760px;
+ margin:55px auto;
+ padding:20px;
+}
+.card{
+ background:#1c1d2b;
+ border:1px solid #303146;
+ border-radius:24px;
+ padding:35px;
+ text-align:center;
+}
+.badge{
+ color:#c4b5fd;
+ background:#30264c;
+ padding:9px 15px;
+ border-radius:30px;
+ display:inline-block;
+ font-size:13px;
+}
+h1{font-size:38px;margin:22px 0 12px}
+p{color:#b7b8c9;line-height:1.6}
+button{
+ border:0;
+ cursor:pointer;
+ border-radius:13px;
+ padding:16px 22px;
+ font-size:16px;
+ font-weight:bold;
+}
+.primary{
+ background:#8b5cf6;
+ color:white;
+ width:100%;
+ margin-top:22px;
+}
+.primary:hover{background:#7c3aed}
+.option{
+ display:block;
+ width:100%;
+ margin:12px 0;
+ background:#292a3b;
+ color:white;
+ text-align:left;
+ border:1px solid #414258;
+}
+.option:hover{background:#39304e;border-color:#a78bfa}
+.progress{
+ height:7px;
+ background:#343548;
+ border-radius:10px;
+ margin:25px 0;
+ overflow:hidden;
+}
+.bar{height:100%;width:0;background:#a78bfa}
+.hidden{display:none}
+.result-icon{font-size:85px;margin:20px}
+footer{text-align:center;color:#666;padding:30px;font-size:13px}
+@media(max-width:500px){
+ h1{font-size:30px}
+ .card{padding:24px 18px}
+ main{margin:25px auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">TESTORIA</div>
+ <span>Тесты для развлечения</span>
+</header>
+
+<main>
+ <section class="card" id="start">
+  <span class="badge">🐾 ПОПУЛЯРНЫЙ ТЕСТ</span>
+  <h1>Какое ты животное?</h1>
+  <p>Ты хищник, спокойный кот или настоящий король джунглей? Ответь на 7 вопросов и узнай, какое животное отражает твой характер!</p>
+  <button class="primary" onclick="begin()">Пройти тест →</button>
+ </section>
+
+ <section class="card hidden" id="quiz">
+  <span class="badge" id="number">Вопрос 1 из 7</span>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <h1 id="question"></h1>
+  <div id="answers"></div>
+ </section>
+
+ <section class="card hidden" id="result">
+  <span class="badge">ТВОЙ РЕЗУЛЬТАТ</span>
+  <div class="result-icon" id="emoji"></div>
+  <h1 id="animal"></h1>
+  <p id="description"></p>
+  <button class="primary" onclick="share()">Поделиться результатом</button>
+  <button class="option" onclick="restart()">Пройти ещё раз</button>
+ </section>
+</main>
+
+<footer>© 2026 Testoria · Развлекательные тесты</footer>
+
+<script>
+const questions=[
+ {
+  q:"Как ты предпочитаешь проводить свободное время?",
+  a:["С друзьями и компанией","В одиночестве","На прогулке и приключениях","Дома в спокойствии"]
+ },
+ {
+  q:"Что ты сделаешь в сложной ситуации?",
+  a:["Возьму всё под контроль","Сначала всё обдумаю","Буду действовать быстро","Попрошу помощи"]
+ },
+ {
+  q:"Какое качество тебе ближе?",
+  a:["Смелость","Хитрость","Независимость","Доброта"]
+ },
+ {
+  q:"Какой отдых тебе нравится?",
+  a:["Активный отдых","Путешествия","Тихий вечер","Встречи с друзьями"]
+ },
+ {
+  q:"Как тебя описывают знакомые?",
+  a:["Лидер","Умный и наблюдательный","Свободолюбивый","Добрый и спокойный"]
+ },
+ {
+  q:"Что для тебя важнее?",
+  a:["Уважение","Свобода","Комфорт","Близкие люди"]
+ },
+ {
+  q:"Выбери место для жизни:",
+  a:["Горы","Лес","Большой город","Уютный дом"]
+ }
+];
+
+const animals=[
+ {name:"Лев",emoji:"🦁",desc:"Ты уверенный и смелый человек. Тебе нравится проявлять инициативу и вести за собой других."},
+ {name:"Лиса",emoji:"🦊",desc:"Ты сообразительный, наблюдательный и умеешь находить выход даже из необычных ситуаций."},
+ {name:"Волк",emoji:"🐺",desc:"Ты ценишь свободу, верность и независимость. У тебя сильный характер."},
+ {name:"Кот",emoji:"🐱",desc:"Ты ценишь комфорт, личное пространство и умеешь наслаждаться спокойствием."},
+ {name:"Медведь",emoji:"🐻",desc:"Ты спокойный, надёжный и терпеливый. На тебя можно положиться."},
+ {name:"Дельфин",emoji:"🐬",desc:"Ты дружелюбный, любознательный и любишь общение и новые впечатления."}
+];
+
+let index=0;
+let scores=[0,0,0,0,0,0];
+
+const mapping=[
+ [0,5,2,4],
+ [0,1,2,4],
+ [2,1,0,5],
+ [2,1,4,5],
+ [0,1,2,4],
+ [0,2,4,5],
+ [2,1,5,4]
+];
+
+function begin(){
+ document.getElementById("start").classList.add("hidden");
+ document.getElementById("quiz").classList.remove("hidden");
+ showQuestion();
+}
+
+function showQuestion(){
+ const q=questions[index];
+ document.getElementById("number").textContent=`Вопрос ${index+1} из ${questions.length}`;
+ document.getElementById("bar").style.width=((index+1)/questions.length*100)+"%";
+ document.getElementById("question").textContent=q.q;
+ const box=document.getElementById("answers");
+ box.innerHTML="";
+ q.a.forEach((answer,i)=>{
+  const button=document.createElement("button");
+  button.className="option";
+  button.textContent=answer;
+  button.onclick=()=>choose(i);
+  box.appendChild(button);
+ });
+}
+
+function choose(choice){
+ scores[mapping[index][choice]]++;
+ index++;
+ if(index<questions.length)showQuestion();
+ else showResult();
+}
+
+function showResult(){
+ document.getElementById("quiz").classList.add("hidden");
+ document.getElementById("result").classList.remove("hidden");
+ const winner=scores.indexOf(Math.max(...scores));
+ const animal=animals[winner];
+ document.getElementById("emoji").textContent=animal.emoji;
+ document.getElementById("animal").textContent="Ты — "+animal.name+"!";
+ document.getElementById("description").textContent=animal.desc;
+}
+
+function share(){
+ const text="Я прошёл тест «Какое ты животное?» на Testoria. Мой результат: "+document.getElementById("animal").textContent;
+ if(navigator.share){
+  navigator.share({title:"Testoria",text:text,url:location.href});
+ }else{
+  navigator.clipboard.writeText(text+" "+location.href);
+  alert("Результат скопирован!");
+ }
+}
+
+function restart(){
+ index=0;
+ scores=[0,0,0,0,0,0];
+ document.getElementById("result").classList.add("hidden");
+ document.getElementById("start").classList.remove("hidden");
+}
+</script>
+</body>
+</html>
